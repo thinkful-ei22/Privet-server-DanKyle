@@ -26,6 +26,9 @@ app.use(
   })
 );
 
+// parse request body
+app.use(express.json());
+
 // mount routers
 app.use('/api/users', usersRouter);
 
