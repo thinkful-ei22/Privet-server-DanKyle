@@ -98,7 +98,7 @@ router.post('/', (req, res, next) => {
     })
     .then(user => {
       return res
-        .location()
+        .location(`${req.originalUrl}/${user.id}`)
         .status(201)
         .json(user);
     })
