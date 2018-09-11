@@ -3,6 +3,8 @@
 const express = require('express');
 
 const User = require('../models/User');
+const Word = require('../models/Word');
+// const startingWords = require('../db/seed/words');
 
 const router = express.Router();
 
@@ -87,6 +89,7 @@ router.post('/', (req, res, next) => {
   // otherwise we throw an error before this
   name = name.trim();
 
+  let user = {};
   return User
     .hashPassword(password)
     .then(digest => {
@@ -96,7 +99,35 @@ router.post('/', (req, res, next) => {
         name
       });
     })
-    .then(user => {
+    .then(_user => {
+      user = _user;
+
+      return Word
+        .find();
+    })
+    .then(words => {
+      console.log('words: ', words);
+      const updateObj = { words: [] };
+      
+      for(let i=0; i < words.length; i++) {
+
+        updateObj.words.push({
+          wordId: words[i].id,
+          nextId: words[(i+1) % words.length].id
+        });
+      }
+      console.log('updateObj: ', updateObj);
+
+      return User
+        .findByIdAndUpdate(
+          user.id,
+          updateObj,
+          { new: true }
+        );
+    })
+    .then(_updatedUser => {
+      user = _updatedUser;
+
       return res
         .location(`${req.originalUrl}/${user.id}`)
         .status(201)
