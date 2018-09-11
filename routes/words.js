@@ -18,21 +18,21 @@ router.use('/', jwtAuth);
 
 router.get('/', (req, res, next) => {
   const userId = req.user.id;
-  console.log('userId: ', userId);
+  // console.log('userId: ', userId);
 
   // send the next question for that User
   User
     .findById(userId, 'words')
     .populate('words.wordId')
     .then(words => {
-      console.log('words: ', words);
+      // console.log('words: ', words);
       if (words) {
         let nextWord = {
           word: words.words[0].wordId.russian,
           translit: words.words[0].wordId.translit,
           id: words.words[0]._id
         };
-        console.log('nextWord: ', nextWord);
+        // console.log('nextWord: ', nextWord);
         res.json(nextWord);
       } else {
         next();
