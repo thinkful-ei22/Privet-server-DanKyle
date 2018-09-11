@@ -18,6 +18,7 @@ const jwtStrategy = require('./passport/jwt');
 // routers
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
+const wordsRouter = require('./routes/words');
 
 // initialization
 const app = express();
@@ -44,6 +45,7 @@ app.use(express.json());
 // mount routers
 app.use('/api', authRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/word', wordsRouter);
 
 
 // Custom 404 Not Found route handler
