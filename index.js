@@ -13,6 +13,7 @@ const { dbConnect } = require('./db-mongoose');
 
 // middlewares
 const localStrategy = require('./passport/local');
+const jwtStrategy = require('./passport/jwt');
 
 // routers
 const usersRouter = require('./routes/users');
@@ -21,6 +22,7 @@ const authRouter = require('./routes/auth');
 // initialization
 const app = express();
 passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 // Log all requests. Skip during testing
 app.use(
