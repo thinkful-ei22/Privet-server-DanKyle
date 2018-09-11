@@ -5,7 +5,6 @@ const express = require('express');
 const passport = require('passport');
 
 // models
-const Word = require('../models/Word');
 const User = require('../models/User');
 
 // initialization
@@ -22,15 +21,15 @@ router.get('/', (req, res, next) => {
 
   // send the next question for that User
   User
-    .findById(userId, 'words')
-    .populate('words.wordId')
-    .then(words => {
-      // console.log('words: ', words);
-      if (words) {
+    .findById(userId, 'questions')
+    .populate('questions.wordId')
+    .then(questions => {
+      // console.log('questions: ', questions);
+      if (questions) {
         let nextWord = {
-          word: words.words[0].wordId.russian,
-          translit: words.words[0].wordId.translit,
-          id: words.words[0]._id
+          word: questions.questions[0].wordId.russian,
+          translit: questions.questions[0].wordId.translit,
+          id: questions.questions[0]._id
         };
         // console.log('nextWord: ', nextWord);
         res.json(nextWord);
