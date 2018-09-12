@@ -90,7 +90,8 @@ router.post('/', (req, res, next) => {
   name = name.trim();
 
   let user = {};
-  return User
+
+  const userCreatePromise = User
     .hashPassword(password)
     .then(digest => {
       return User.create({
@@ -98,21 +99,20 @@ router.post('/', (req, res, next) => {
         password: digest,
         name
       });
-    })
-    .then(_user => {
-      user = _user;
+    });
+  const wordsFindAllPromise = Word.find();
 
-      return Word
-        .find();
-    })
-    .then(words => {
+  return Promise.all([
+    userCreatePromise,
+    wordsFindAllPromise
+  ])
+    .then(([user, words]) => {
       const updateObj = { questions: [] };
-      
+      console.log('user: ', user);
       for(let i=0; i < words.length; i++) {
-
         updateObj.questions.push({
           wordId: words[i].id,
-          nextId: words[(i+1) % words.length].id
+          next: (i + 1) % words.length
         });
       }
 

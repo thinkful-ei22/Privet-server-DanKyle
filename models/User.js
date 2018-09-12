@@ -14,14 +14,11 @@ const userSchema = mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Word'
     },
-    attempts: { type: Number, default: 0 },
     score: { type: Number, default: 0 },
     mValue: { type: Number, default: 1 },
-    nextId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Word'
-    }
-  }]
+    next: { type: Number }
+  }],
+  head: { type: Number, default: 0 }
 });
 
 userSchema.methods.validatePassword = function(password) {
