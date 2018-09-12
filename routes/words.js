@@ -27,14 +27,15 @@ router.get('/', (req, res, next) => {
 
   // send the next question for that User
   User
-    .findById(userId, 'questions')
+    .findById(userId, 'questions head')
     .populate('questions.wordId')
     .then(results => {
+      console.log(results);
       if (results) {
+        let head = results.head;
         let nextWord = {
-          word: results.questions[0].wordId.russian,
-          translit: results.questions[0].wordId.translit,
-          questionId: results.questions[0]._id
+          word: results.questions[head].wordId.russian,
+          translit: results.questions[head].wordId.translit
         };
         res.json(nextWord);
       } else {
@@ -51,7 +52,7 @@ router.post('/', (req, res, next) => {
   req.body.userId = userId;
   
   // validate all required field were submitted
-  const requiredFields = ['questionId', 'answer'];
+  const requiredFields = ['answer'];
   const missingField = requiredFields.find(field => !(field in req.body));
   if (missingField) {
     const err = new Error(`Missing \`${missingField}\` in request body`);
@@ -62,7 +63,7 @@ router.post('/', (req, res, next) => {
   }
   
   // validate fields that should be strings are actually of type 'string'
-  const stringFields = ['questionId', 'answer'];
+  const stringFields = ['answer'];
   const nonStringField = stringFields.find(field => {
     return ((req.body[field]) && (typeof req.body[field] !== 'string'));
   });
@@ -75,7 +76,7 @@ router.post('/', (req, res, next) => {
   }
   
   // validate fields that should be mongoose ObjectIds are valid ObjectIds
-  const objectIdFields = ['userId', 'questionId'];
+  const objectIdFields = ['userId'];
   const nonObjectIdField = objectIdFields.find(field => {
     return ((req.body[field]) && !mongoose.Types.ObjectId.isValid(req.body[field]));
   });
@@ -89,36 +90,52 @@ router.post('/', (req, res, next) => {
   
   // checked for existence and 'stringness' above,
   // otherwise would have thrown an error already
-  let { questionId, answer } = req.body;
+  let { answer } = req.body;
   answer = answer.trim().toLowerCase();
-  // let qIndex = 0;
   const response = {};
-  
   User
-    .findById(userId, 'name questions')
+    .findById(userId, 'questions head')
     .populate('questions.wordId')
-    .then(results => {
-      /*
-        current algorithm ensures that the current question
-        is the first element in the array. if that changes,
-        use qIndex to find the right question. if that isn't
-        needed after implementing the updated algo, delete
-        this section
-      */
-      // qIndex = results.questions.findIndex(
-      //   item => item._id = questionId
-      // );
-
-      const question = results.questions.shift();
-      response.answer = question.wordId.english;
+    .then(user => {
+      if (!user) {
+        const err = new Error('User not found');
+        err.status = 404;
+        err.location = 'userId';
+        return next(err);
+      }
+    
+      // console.log('user: ', user);
+      // save current answered question
+      const currQuestion = user.questions[user.head];
+      // build response
+      response.answer = currQuestion.wordId.english;
       response.correct = (answer === response.answer);
+      // mutate current question node
       const wordScore = response.correct ? 1 : -1;
-      question.score += wordScore;
-      question.attempts += 1;
+      currQuestion.score += wordScore;
+      currQuestion.mValue = response.correct ? currQuestion.mValue * 2 : 1;
+      // console.log('mutated: ', user);
       
-      results.questions.push(question);
+      // save current head value
+      const currHead = user.head;
+      // update the user objects head to point at question's next
+      user.head = currQuestion.next;
+      // find the new location of question based on new mValue
+      let nextNode = currQuestion;
+      for (let i=0; i < currQuestion.mValue; i++) {
+        // cycle through the nodes until 
+        nextNode = user.questions[nextNode.next];
+      }
       
-      return results.save();
+      // swap next pointers to insert currQuestion after nextNode
+      // let currIndex = currQuestion;
+      // console.log('nextNode: ', nextNode);
+      currQuestion.next = nextNode.next;
+      nextNode.next = currHead;
+      
+      // console.log('cycled: ', user);
+      
+      return user.save();
     })
     .then(() => {
       return res.json(response);
@@ -126,26 +143,6 @@ router.post('/', (req, res, next) => {
     .catch(err => {
       next(err);
     });
-
-  //* find the right user (populate 'questions')
-  //* find the right wordId
-  // check the answer against the 'english' key (.trim().toLowerCase())
-  // if wrong ->
-  //    console.log('WRONG')
-  //    increment attempts by 1
-  //    decrement score by 1
-  //    remove item from beginning of questions array
-  //    add to end of questions array
-  //    return { correct: 'false', answer: correctAnswer }
-  // if correct ->
-  //    console.log('WINNER')
-  //    increment attempts by 1
-  //    increment score by 1
-  //    remove item from beginning of questions array
-  //    add to end of questions array
-  //    return { correct: 'true', answer: correctAnswer }
-
-
 });
 
 module.exports = router;
