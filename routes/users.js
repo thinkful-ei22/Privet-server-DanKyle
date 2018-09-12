@@ -106,17 +106,15 @@ router.post('/', (req, res, next) => {
         .find();
     })
     .then(words => {
-      console.log('words: ', words);
-      const updateObj = { words: [] };
+      const updateObj = { questions: [] };
       
       for(let i=0; i < words.length; i++) {
 
-        updateObj.words.push({
+        updateObj.questions.push({
           wordId: words[i].id,
           nextId: words[(i+1) % words.length].id
         });
       }
-      console.log('updateObj: ', updateObj);
 
       return User
         .findByIdAndUpdate(

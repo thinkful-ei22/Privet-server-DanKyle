@@ -9,13 +9,13 @@ const userSchema = mongoose.Schema({
   name: { type: String, required: true },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  words: [{
+  questions: [{
     wordId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Word'
     },
     attempts: { type: Number, default: 0 },
-    successes: { type: Number, default: 0 },
+    score: { type: Number, default: 0 },
     mValue: { type: Number, default: 1 },
     nextId: {
       type: mongoose.Schema.Types.ObjectId,
