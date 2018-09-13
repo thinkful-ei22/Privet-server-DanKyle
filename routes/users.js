@@ -152,6 +152,7 @@ router.post('/', (req, res, next) => {
     });
 });
 
+/* ========== GET A USERS PROGRESS ========== */
 router.get('/progress', jwtAuth, (req, res, next) => {
   const userId = req.user.id;
 
@@ -186,6 +187,40 @@ router.get('/progress', jwtAuth, (req, res, next) => {
       };
 
       return res.json(progress);
+    });
+});
+
+router.put('/reset', jwtAuth, (req, res, next) => {
+  const userId = req.user.id;
+
+  // validate userId as proper type through mongoose
+  const objectIdFields = ['userId'];
+  const nonObjectIdField = objectIdFields.find(field => {
+    return ((req.body[field]) && !mongoose.Types.ObjectId.isValid(req.body[field]));
+  });
+  if (nonObjectIdField) {
+    const err = new Error(`The \`${nonObjectIdField}\` must be a valid ObjectId`);
+    err.status = 422;
+    err.reason = 'ValidationError';
+    err.location = `${nonObjectIdField}`;
+    return next(err);
+  }
+
+  User
+    .findById(userId, 'questions')
+    .populate('questions.wordId')
+    .then(results => {
+      results.questions.forEach(question => {
+        question.sessionScore = 0;
+        question.sessionAttempts = 0;
+      });
+      return results.save();
+    })
+    .then(() => {
+      return res.sendStatus(200);
+    })
+    .catch(err => {
+      next(err);
     });
 });
 

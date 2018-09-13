@@ -16,6 +16,8 @@ const userSchema = mongoose.Schema({
     },
     score: { type: Number, default: 0 },
     attempts: { type: Number, default: 0 },
+    sessionScore: { type: Number, default: 0 },
+    sessionAttempts: { type: Number, default: 0 },
     mValue: { type: Number, default: 1 },
     next: { type: Number }
   }],

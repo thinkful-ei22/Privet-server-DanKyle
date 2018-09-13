@@ -171,7 +171,7 @@ describe('Privet API - Users', function () {
           .send(testUser)
           .then(res => {
             expect(res).to.have.status(422);
-            
+
             const body = res.body;
             expect(body).to.be.an('object');
             expect(body.reason).to.equal('ValidationError');
@@ -393,13 +393,6 @@ describe('Privet API - Users', function () {
     describe('GET', function () {
       
       it('should return the users progress when given a valid, logged-in user', function () {
-        // create user
-        // log user in
-        // make request for progress
-        // get progress info directly from the db
-        // check the right fields are returned with the correct information
-        // (would be mostly zeroes, but needs to match the db response)
-
         const sampleUser = {
           name: 'sampleUser',
           username: 'sampleUser',
@@ -429,13 +422,12 @@ describe('Privet API - Users', function () {
           .then(([response, data]) => {
             expect(response).to.exist;
             expect(response).to.have.status(200);
-            const body = response.body;
             expect(data).to.exist;
-            // console.log('body: ', body);
-            // console.log('data: ', data);
-
+            
+            const body = response.body;
             expect(body).to.be.an('object');
             expect(body).to.have.keys(['questions']);
+
             const questions = body.questions;
             expect(questions).to.be.an('array');
             questions.forEach((question, i) => {
@@ -448,6 +440,95 @@ describe('Privet API - Users', function () {
               expect(question.attempts).to.equal(data.questions[i].attempts);
             });
 
+          });
+      });
+    });
+  });
+
+  describe('/api/users/reset', function () {
+
+    describe('POST', function () {
+
+      it('should reset a valid users session score and session attempts', function () {
+
+        // create a user
+        const sampleUser = {
+          name: 'sampleUser',
+          username: 'sampleUser',
+          password: 'samplePassword'
+        };
+        const sampleSubmission = {
+          answer: 'hello'
+        };
+        let res;
+        let authToken;
+        let initialProgress;
+
+        return chai
+          .request(app)
+          .post('/api/users')
+          .send(sampleUser)
+          .then(_res => {
+            res = _res;
+            // generate token for logged-in status
+            authToken = createAuthToken(res.body);
+
+            return chai
+              .request(app)
+              .post('/api/word')
+              .send(sampleSubmission)
+              .set('Authorization', `Bearer ${authToken}`);
+          })
+          .then(response => {
+            expect(response).to.have.status(200);
+
+            return User
+              .findById(res.body.id)
+              .populate('questions.wordId');
+          })
+          .then(_data => {
+            const data = _data.toJSON();
+            // console.log('data: ', data);
+            initialProgress = data.questions;
+            expect(initialProgress).to.exist;
+            expect(initialProgress).to.be.an('array');
+
+            let answeredQ = initialProgress[0];
+            expect(answeredQ).to.be.an('object');
+            expect(answeredQ).to.have.keys(['_id', 'wordId', 'score', 'attempts', 'sessionScore', 'sessionAttempts', 'mValue', 'next']);
+            expect(answeredQ.mValue).to.equal(2);
+            expect(answeredQ.score).to.equal(1);
+            expect(answeredQ.attempts).to.equal(1);
+            expect(answeredQ.sessionScore).to.equal(1);
+            expect(answeredQ.sessionAttempts).to.equal(1);
+
+            return chai
+              .request(app)
+              .put('/api/users/reset')
+              .set('Authorization', `Bearer ${authToken}`);
+          })
+          .then(response => {
+            expect(response).to.have.status(200);
+
+            return User
+              .findById(res.body.id)
+              .populate('questions.wordId');
+          })
+          .then(_data => {
+            const data = _data.toJSON();
+            const resetProgress = data.questions;
+
+            expect(resetProgress).to.exist;
+            expect(resetProgress).to.be.an('array');
+
+            let answeredQ = resetProgress[0];
+            expect(answeredQ).to.be.an('object');
+            expect(answeredQ).to.have.keys(['_id', 'wordId', 'score', 'attempts', 'sessionScore', 'sessionAttempts', 'mValue', 'next']);
+            expect(answeredQ.mValue).to.equal(2);
+            expect(answeredQ.score).to.equal(1);
+            expect(answeredQ.attempts).to.equal(1);
+            expect(answeredQ.sessionScore).to.equal(0);
+            expect(answeredQ.sessionAttempts).to.equal(0);
           });
       });
     });
