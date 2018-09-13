@@ -116,8 +116,10 @@ router.post('/', (req, res, next) => {
 
       // mutate current question node based on answer
       currQuestion.attempts += 1;
+      currQuestion.sessionAttempts += 1;
       const wordScore = response.correct ? 1 : 0;
       currQuestion.score += wordScore;
+      currQuestion.sessionScore += wordScore;
       currQuestion.mValue = response.correct ? currQuestion.mValue * 2 : 1;
       
       // cycle through questions to find currQuestion's
