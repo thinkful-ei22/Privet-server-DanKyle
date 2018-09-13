@@ -104,36 +104,31 @@ router.post('/', (req, res, next) => {
         return next(err);
       }
     
-      // console.log('user: ', user);
-      // save current answered question
+      // save current question & head for use later
       const currQuestion = user.questions[user.head];
+      const currHead = user.head;
+      // update the head to point at next question
+      user.head = currQuestion.next;
+
       // build response
       response.answer = currQuestion.wordId.english;
       response.correct = (answer === response.answer);
-      // mutate current question node
+
+      // mutate current question node based on answer
       const wordScore = response.correct ? 1 : -1;
       currQuestion.score += wordScore;
       currQuestion.mValue = response.correct ? currQuestion.mValue * 2 : 1;
-      // console.log('mutated: ', user);
       
-      // save current head value
-      const currHead = user.head;
-      // update the user objects head to point at question's next
-      user.head = currQuestion.next;
-      // find the new location of question based on new mValue
+      // cycle through questions to find currQuestion's
+      // new location based on new mValue
       let nextNode = currQuestion;
       for (let i=0; i < currQuestion.mValue; i++) {
-        // cycle through the nodes until 
         nextNode = user.questions[nextNode.next];
       }
       
       // swap next pointers to insert currQuestion after nextNode
-      // let currIndex = currQuestion;
-      // console.log('nextNode: ', nextNode);
       currQuestion.next = nextNode.next;
       nextNode.next = currHead;
-      
-      // console.log('cycled: ', user);
       
       return user.save();
     })
