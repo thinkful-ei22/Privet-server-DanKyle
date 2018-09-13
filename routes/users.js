@@ -108,7 +108,7 @@ router.post('/', (req, res, next) => {
   ])
     .then(([user, words]) => {
       const updateObj = { questions: [] };
-      console.log('user: ', user);
+
       for(let i=0; i < words.length; i++) {
         updateObj.questions.push({
           wordId: words[i].id,
@@ -124,7 +124,11 @@ router.post('/', (req, res, next) => {
         );
     })
     .then(_updatedUser => {
-      user = _updatedUser;
+      user = {
+        id: _updatedUser.id,
+        name: _updatedUser.name,
+        username: _updatedUser.username
+      };
 
       return res
         .location(`${req.originalUrl}/${user.id}`)
