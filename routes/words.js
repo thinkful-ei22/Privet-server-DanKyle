@@ -115,7 +115,8 @@ router.post('/', (req, res, next) => {
       response.correct = (answer === response.answer);
 
       // mutate current question node based on answer
-      const wordScore = response.correct ? 1 : -1;
+      currQuestion.attempts += 1;
+      const wordScore = response.correct ? 1 : 0;
       currQuestion.score += wordScore;
       currQuestion.mValue = response.correct ? currQuestion.mValue * 2 : 1;
       

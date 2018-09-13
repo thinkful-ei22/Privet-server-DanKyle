@@ -15,6 +15,7 @@ const userSchema = mongoose.Schema({
       ref: 'Word'
     },
     score: { type: Number, default: 0 },
+    attempts: { type: Number, default: 0 },
     mValue: { type: Number, default: 1 },
     next: { type: Number }
   }],
