@@ -4,9 +4,9 @@ const { app } = require('../index');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const mongoose = require('mongoose');
-const mongo = require('mongodb');
 
 const { TEST_DATABASE_URL } = require('../config');
+const { createAuthToken } = require('../utils/auth');
 
 const User = require('../models/User');
 const Word = require('../models/Word');
@@ -385,6 +385,71 @@ describe('Privet API - Users', function () {
       it('should reject users with duplicate username');
 
       it('should trim name');
+    });
+  });
+
+  describe('/api/users/progress', function () {
+
+    describe('GET', function () {
+      
+      it('should return the users progress when given a valid, logged-in user', function () {
+        // create user
+        // log user in
+        // make request for progress
+        // get progress info directly from the db
+        // check the right fields are returned with the correct information
+        // (would be mostly zeroes, but needs to match the db response)
+
+        const sampleUser = {
+          name: 'sampleUser',
+          username: 'sampleUser',
+          password: 'samplePassword'
+        };
+        let res;
+
+        return chai
+          .request(app)
+          .post('/api/users')
+          .send(sampleUser)
+          .then(_res => {
+            res = _res;
+            // generate token for logged-in status
+            const authToken = createAuthToken(res.body);
+
+            return Promise.all([
+              chai
+                .request(app)
+                .get('/api/users/progress')
+                .set('Authorization', `Bearer ${authToken}`),
+              User
+                .findById(res.body.id, 'questions')
+                .populate('questions.wordId')
+            ]);
+          })
+          .then(([response, data]) => {
+            expect(response).to.exist;
+            expect(response).to.have.status(200);
+            const body = response.body;
+            expect(data).to.exist;
+            // console.log('body: ', body);
+            // console.log('data: ', data);
+
+            expect(body).to.be.an('object');
+            expect(body).to.have.keys(['questions']);
+            const questions = body.questions;
+            expect(questions).to.be.an('array');
+            questions.forEach((question, i) => {
+              expect(question).to.be.an('object');
+              expect(question).to.have.keys(['russian', 'translit', 'english', 'score', 'attempts']);
+              expect(question.russian).to.equal(data.questions[i].wordId.russian);
+              expect(question.translit).to.equal(data.questions[i].wordId.translit);
+              expect(question.english).to.equal(data.questions[i].wordId.english);
+              expect(question.score).to.equal(data.questions[i].score);
+              expect(question.attempts).to.equal(data.questions[i].attempts);
+            });
+
+          });
+      });
     });
   });
 });

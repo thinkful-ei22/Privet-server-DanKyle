@@ -1,10 +1,15 @@
 'use strict';
 
 const express = require('express');
+const passport = require('passport');
+const mongoose = require('mongoose');
 
 const User = require('../models/User');
 const Word = require('../models/Word');
-// const startingWords = require('../db/seed/words');
+
+// middlewares
+const options = { session: false, failWithError: true };
+const jwtAuth = passport.authenticate('jwt', options);
 
 const router = express.Router();
 
@@ -144,6 +149,43 @@ router.post('/', (req, res, next) => {
         err.location = 'username';
       }
       next(err);
+    });
+});
+
+router.get('/progress', jwtAuth, (req, res, next) => {
+  const userId = req.user.id;
+
+  // validate userId as proper type through mongoose
+  const objectIdFields = ['userId'];
+  const nonObjectIdField = objectIdFields.find(field => {
+    return ((req.body[field]) && !mongoose.Types.ObjectId.isValid(req.body[field]));
+  });
+  if (nonObjectIdField) {
+    const err = new Error(`The \`${nonObjectIdField}\` must be a valid ObjectId`);
+    err.status = 422;
+    err.reason = 'ValidationError';
+    err.location = `${nonObjectIdField}`;
+    return next(err);
+  }
+
+  User
+    .findById(userId, 'questions')
+    .populate('questions.wordId')
+    .then(results => {
+      const mungedQuestions = results.questions.map(question => {
+        return ({
+          russian: question.wordId.russian,
+          translit: question.wordId.translit,
+          english: question.wordId.english,
+          score: question.score,
+          attempts: question.attempts
+        });
+      });
+      const progress = {
+        questions: mungedQuestions
+      };
+
+      return res.json(progress);
     });
 });
 
