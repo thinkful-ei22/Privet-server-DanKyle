@@ -432,12 +432,14 @@ describe('Privet API - Users', function () {
             expect(questions).to.be.an('array');
             questions.forEach((question, i) => {
               expect(question).to.be.an('object');
-              expect(question).to.have.keys(['russian', 'translit', 'english', 'score', 'attempts']);
+              expect(question).to.have.keys(['russian', 'translit', 'english', 'score', 'attempts', 'sessionScore', 'sessionAttempts']);
               expect(question.russian).to.equal(data.questions[i].wordId.russian);
               expect(question.translit).to.equal(data.questions[i].wordId.translit);
               expect(question.english).to.equal(data.questions[i].wordId.english);
               expect(question.score).to.equal(data.questions[i].score);
               expect(question.attempts).to.equal(data.questions[i].attempts);
+              expect(question.sessionScore).to.equal(data.questions[i].sessionScore);
+              expect(question.sessionAttempts).to.equal(data.questions[i].sessionAttempts);
             });
 
           });
