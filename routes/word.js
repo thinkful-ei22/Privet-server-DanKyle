@@ -30,7 +30,7 @@ router.get('/', (req, res, next) => {
     .findById(userId, 'questions head')
     .populate('questions.wordId')
     .then(results => {
-      console.log(results);
+      // console.log(results);
       if (results) {
         let head = results.head;
         let nextWord = {
