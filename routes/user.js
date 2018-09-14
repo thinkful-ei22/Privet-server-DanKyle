@@ -179,7 +179,9 @@ router.get('/progress', jwtAuth, (req, res, next) => {
           translit: question.wordId.translit,
           english: question.wordId.english,
           score: question.score,
-          attempts: question.attempts
+          attempts: question.attempts,
+          sessionScore: question.sessionScore,
+          sessionAttempts: question.sessionAttempts
         });
       });
       const progress = {
