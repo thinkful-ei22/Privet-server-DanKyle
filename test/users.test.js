@@ -453,7 +453,6 @@ describe('Privet API - Users', function () {
 
       it('should reset a valid users session score and session attempts', function () {
 
-        // create a user
         const sampleUser = {
           name: 'sampleUser',
           username: 'sampleUser',
@@ -490,7 +489,7 @@ describe('Privet API - Users', function () {
           })
           .then(_data => {
             const data = _data.toJSON();
-            // console.log('data: ', data);
+
             initialProgress = data.questions;
             expect(initialProgress).to.exist;
             expect(initialProgress).to.be.an('array');

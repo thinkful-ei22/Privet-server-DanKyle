@@ -16,6 +16,7 @@ const options = { session: false, failWithError: true };
 const jwtAuth = passport.authenticate('jwt', options);
 router.use('/', jwtAuth);
 
+/* ========== GET THE USERS NEXT WORD ========== */
 router.get('/', (req, res, next) => {
   const userId = req.user.id;
 
@@ -47,6 +48,7 @@ router.get('/', (req, res, next) => {
     });
 });
 
+/* ========== POST THE USERS GUESS FOR CURRENT WORD ========== */
 router.post('/', (req, res, next) => {
   const userId = req.user.id;
   req.body.userId = userId;

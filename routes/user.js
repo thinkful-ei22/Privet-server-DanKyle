@@ -1,9 +1,11 @@
 'use strict';
 
+// npm packages
 const express = require('express');
 const passport = require('passport');
 const mongoose = require('mongoose');
 
+// models
 const User = require('../models/User');
 const Word = require('../models/Word');
 
@@ -11,6 +13,7 @@ const Word = require('../models/Word');
 const options = { session: false, failWithError: true };
 const jwtAuth = passport.authenticate('jwt', options);
 
+// initialization
 const router = express.Router();
 
 /* ========== POST/CREATE AN NEW USER ========== */
@@ -192,6 +195,7 @@ router.get('/progress', jwtAuth, (req, res, next) => {
     });
 });
 
+/* ========== PUT/RESET USERS PROGRESS FOR CURRENT SESSION ========== */
 router.put('/reset', jwtAuth, (req, res, next) => {
   const userId = req.user.id;
 
