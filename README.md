@@ -6,7 +6,12 @@ Check out the [live version here](https://privet-hello.herokuapp.com/).
 
 ## Table of Contents
 
-[API EXAMPLES](#api---request--response-examples) | [SERVER SET-UP](#setting-up-the-api-server) | [WORKING ON THE PROJECT](#working-on-the-project) | [DATABASE](#database) | [DEPLOYMENT](#deployment)
+- [API EXAMPLES](#api---request--response-examples)
+- [TECH STACK](#tech-stack)
+- [GETTING STARTED](#getting-started)
+- [WORKING ON THE PROJECT](#working-on-the-project)
+- [DATABASE](#database)
+- [DEPLOYMENT](#deployment)
 
 ## API - Request & Response examples
 
@@ -31,6 +36,9 @@ Request body:
 }
 ```
 
+[ [more examples](#api---request--response-examples) ]
+[ [return to top](#table-of-contents) ]
+
 ### POST /api/refresh
 
 Example: POST <https://example.com/api/refresh>
@@ -42,6 +50,9 @@ Response body:
   "authToken": "A_VALID_JWT"
 }
 ```
+
+[ [more examples](#api---request--response-examples) ]
+[ [return to top](#table-of-contents) ]
 
 ### POST /api/users
 
@@ -67,6 +78,9 @@ Response body:
 }
 ```
 
+[ [more examples](#api---request--response-examples) ]
+[ [return to top](#table-of-contents) ]
+
 ### GET /api/users/progress
 
 Example: <https://example.com/api/users/progress>
@@ -91,6 +105,9 @@ Response body:
 }
 ```
 
+[ [more examples](#api---request--response-examples) ]
+[ [return to top](#table-of-contents) ]
+
 ### PUT /api/users/reset
 
 Example: PUT <http://example.com/api/users/reset>
@@ -98,6 +115,9 @@ Example: PUT <http://example.com/api/users/reset>
 Request body: `empty`
 
 Response: `status 200`
+
+[ [more examples](#api---request--response-examples) ]
+[ [return to top](#table-of-contents) ]
 
 ### GET /api/word
 
@@ -112,6 +132,9 @@ Response body:
 }
 ```
 
+[ [more examples](#api---request--response-examples) ]
+[ [return to top](#table-of-contents) ]
+
 ### POST /api/word
 
 Example: POST <http://example.com/api/word>
@@ -120,7 +143,7 @@ Request body:
 
 ```json
 {
-  "answer": "hello" // user input
+  "answer": "hello" //_user_input
 }
 ```
 
@@ -128,10 +151,25 @@ Response body:
 
 ```json
 {
-  "answer": "hello", // answer from database
+  "answer": "hello", //_answer_from_database
   "correct": "true"
 }
 ```
+
+[ [more examples](#api---request--response-examples) ]
+[ [return to top](#table-of-contents) ]
+
+## Tech Stack
+
+Front-end: React / Redux / CSS Grid [ [repo](https://github.com/thinkful-ei22/Privet-client-DanKyle) ]
+
+Back-end:
+
+- Express.js server
+- Node.js
+- Passport/JWT for authentication
+- MongoDB/Mongoose for data persistence
+- Mocha/Chai for testing
 
 [ [return to top](#table-of-contents) ]
 
