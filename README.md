@@ -4,7 +4,136 @@ The Node.js api powering our [client application](https://github.com/thinkful-ei
 
 Check out the [live version here](https://privet-hello.herokuapp.com/).
 
+## Table of Contents
+
+[API EXAMPLES](#api---request--response-examples) | [SERVER SET-UP](#setting-up-the-api-server) | [WORKING ON THE PROJECT](#working-on-the-project) | [DATABASE](#database) | [DEPLOYMENT](#deployment)
+
 ## API - Request & Response examples
+
+- [POST /api/login](#post-apilogin)
+- [POST /api/refresh](#post-apirefresh)
+- [POST /api/users](#post-apiusers)
+- [GET  /api/users/progress](#get-apiusersprogress)
+- [PUT  /api/users/reset](#put-apiusersreset)
+- [GET  /api/word](#get-apiword)
+- [POST /api/word](#post-apiword)
+
+### POST /api/login
+
+Example: POST <https://example.com/api/login>
+
+Request body:
+
+```json
+{
+  "username": "JohnSmith",
+  "password": "correct-horse-battery-staple"
+}
+```
+
+### POST /api/refresh
+
+Example: POST <https://example.com/api/refresh>
+
+Response body:
+
+```json
+{
+  "authToken": "A_VALID_JWT"
+}
+```
+
+### POST /api/users
+
+Example: POST <https://example.com/api/users>
+
+Request body:
+
+```json
+{
+  "name": "John Smith",
+  "username": "JohnSmith",
+  "password": "correct-horse-battery-staple"
+}
+```
+
+Response body:
+
+```json
+{
+  "id": "MONGO_DOCUMENT_ID",
+  "name": "John Smith",
+  "username": "JohnSmith"
+}
+```
+
+### GET /api/users/progress
+
+Example: <https://example.com/api/users/progress>
+
+Response body:
+
+```json
+{
+  "questions": [
+    {
+      "russian": "Привет",
+      "translit": "pree-vyEt",
+      "english": "hello",
+      "score": "1",
+      "attempts": "1",
+      "sessionScore": "1",
+      "sessionAttempts": "1"
+    },
+    { "repeat": "for" },
+    { "each": "word" }
+  ]
+}
+```
+
+### PUT /api/users/reset
+
+Example: PUT <http://example.com/api/users/reset>
+
+Request body: `empty`
+
+Response: `status 200`
+
+### GET /api/word
+
+Example: <http://example.com/api/word>
+
+Response body:
+
+```json
+{
+  "word": "Привет",
+  "translit": "pree-vyEt"
+}
+```
+
+### POST /api/word
+
+Example: POST <http://example.com/api/word>
+
+Request body:
+
+```json
+{
+  "answer": "hello" // user input
+}
+```
+
+Response body:
+
+```json
+{
+  "answer": "hello", // answer from database
+  "correct": "true"
+}
+```
+
+[ [return to top](#table-of-contents) ]
 
 ## Getting started
 
@@ -44,6 +173,8 @@ Update the remote to point to your GitHub repository:
   git remote set-url origin https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME
 ```
 
+[ [return to top](#table-of-contents) ]
+
 ### Working on the project
 
 Move into the project directory:
@@ -61,9 +192,13 @@ Run the development task:
 * Starts a server running at http://localhost:8080
 * Automatically restarts when any of your files change
 
-## Databases
+[ [return to top](#table-of-contents) ]
+
+## Database
 
 The server is configured to connect to a MongoDB database using Mongoose. The `DATABASE_URL` defaults to `mongodb://localhost:27017/privet-backend`, but can be configured via environment variables. We recommend utilizing [dotenv](https://github.com/motdotla/dotenv) to store your variables locally in a `.env` file.
+
+[ [return to top](#table-of-contents) ]
 
 ## Deployment
 
@@ -102,3 +237,5 @@ Push your code to Heroku:
 ```bash
   git push heroku master
 ```
+
+[ [return to top](#table-of-contents) ]
